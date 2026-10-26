@@ -1,13 +1,14 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from math import log
 
 def sinusoidal_embeddings(t, dim, max_period=10000):
     """
     Convert a timestep of dim [B] to a sinusoidal embedding of dimension [B, D]  
     """
     # Frequencies
-    frequencies = torch.exp(-torch.log(max_period) * torch.arange(start=0, end=(dim // 2)) / (dim // 2))
+    frequencies = torch.exp(-log(max_period) * torch.arange(start=0, end=(dim // 2)) / (dim // 2))
 
     # Calculate sinusoidal embeddings
     # converts timesteps to be of dim [B//2, 1]
@@ -46,6 +47,10 @@ class Upsample(nn.Module):
 class ResBlock(nn.Module):
     def __init__(self, num_channels, embed_channels, out_channels):
         super().__init__()
+        # Define terms
+        self.out_channels = out_channels
+        self.embed_channels = embed_channels
+        self.num_channels = num_channels
 
         # Define main layers 
         self.conv2d_1 = nn.Conv2d(num_channels, num_channels, kernel_size=3, padding=1)
@@ -54,7 +59,7 @@ class ResBlock(nn.Module):
 
         # Normalization
         self.norm1 = nn.GroupNorm(num_groups=8, num_channels=num_channels)
-        self.norm2 = nn.GroupNorm(num_groups=8, num_channels=out_channels)
+        self.norm2 = nn.GroupNorm(num_groups=8, num_channels=num_channels)
 
         # Timestep Embedding projection
         self.timestep_proj = nn.Linear(embed_channels, num_channels)

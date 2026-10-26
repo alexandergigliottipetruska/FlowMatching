@@ -9,7 +9,7 @@ def dataset_builder(data_dir, train=True):
         root=data_dir,
         train=train,
         transform=v2.Compose([v2.ToImage(), v2.ToDtype(torch.float32, scale=True), v2.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])]),
-        download=True
+        download=False
     )
 
 def dataloader_builder(dataset, batch_size):

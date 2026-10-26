@@ -41,7 +41,8 @@ def euler_sampler(model, batch_size, num_steps, device):
 
     for k in range(num_steps):
         # Predict velocity of intermediate state
-        vk = model(xk, tk)
+        with torch.no_grad():
+            vk = model(xk, tk)
 
         # Update image
         xk = xk + delta_t * vk

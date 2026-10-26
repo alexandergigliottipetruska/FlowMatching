@@ -12,12 +12,12 @@ parser = argparse.ArgumentParser()
 
 # Add optional arguments
 parser.add_argument("--batch-size", default=64, type=int, help="batch size for training")
-parser.add_argument("--learning-rate", default=0.001, type=float, help="learning rate for gradient updates")
+parser.add_argument("--learning-rate", default=0.0001, type=float, help="learning rate for gradient updates")
 parser.add_argument("--epochs", default=10, type=int, help="total number of training epochs")
 parser.add_argument("--seed", default=1, type=int, help="seed for training reproducibility")
 parser.add_argument("--device", default="cuda", type=str, help="CPU or GPU device")
 parser.add_argument("--data_dir", default="data", type=str, help="directory with training dataset")
-parser.add_argument("--output_dir", default="output", type=str, help="directory to store outputs and checkpoints")
+parser.add_argument("--output_dir", default="outputs/checkpoints", type=str, help="directory to store outputs and checkpoints")
 
 # Access arguments passed via CLI
 args = parser.parse_args()
