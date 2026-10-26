@@ -53,7 +53,16 @@ test_dataloader = dataloader_builder(
     batch_size=config.batch_size
 )
 
-model = UNet()
+# Set device
+if torch.cuda.is_available():
+    device = "cuda"          
+elif torch.backends.mps.is_available():
+    device = "mps"           
+else:
+    device = "cpu"
+
+# Initialize model
+model = UNet().to(device)
 
 # Define optimizer
 optimizer = optim.Adam(model.parameters(), lr=config.learning_rate)
@@ -70,12 +79,14 @@ for epoch in range(config.epochs):
 
     for data in train_dataloader:
         x1, _ = data # get clean images of dim (B, C, H, W)
+        x1 = x1.to(device)
 
         # Zero gradients
         optimizer.zero_grad()
 
         # Sample noisy images from a Gaussian distribution with mean 0 and variance 1. 
         x0 = torch.randn_like(x1)
+        x0 = x0.to(device)
 
         # Get t, xt (intermediate samples), and ut (target velocity)
         t, xt, ut = sample_path(x0, x1)
@@ -105,9 +116,11 @@ for epoch in range(config.epochs):
         
         for data in test_dataloader():
             x1, _ = data
+            x1 = x1.to(device)
 
             # Sample noisy images
-            xo = torch.randn_like(x1)
+            x0 = torch.randn_like(x1)
+            x0 = x0.to(device)
 
             # Get t, xt (intermediate samples), and ut (target velocity)
             t, xt, ut = sample_path(x0, x1)
