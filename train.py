@@ -138,4 +138,4 @@ for epoch in range(config.epochs):
 
     print(f"Epochs {epoch + 1}/{config.epochs} | Train: {avg_loss:.2f} | Eval: {eval_loss:.2f}")
 
-torch.save(model.state_dict(), config.output_dir)
+torch.save(model.state_dict(), f"{config.output_dir}/unet_checkpoint.pt")
