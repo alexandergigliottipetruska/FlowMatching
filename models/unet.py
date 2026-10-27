@@ -8,7 +8,8 @@ def sinusoidal_embeddings(t, dim, max_period=10000):
     Convert a timestep of dim [B] to a sinusoidal embedding of dimension [B, D]  
     """
     # Frequencies
-    frequencies = torch.exp(-log(max_period) * torch.arange(start=0, end=(dim // 2)) / (dim // 2))
+    frequencies = torch.exp(-log(max_period) * torch.arange(start=0, end=(dim // 2)) / (dim // 2)).to(t.device)
+
 
     # Calculate sinusoidal embeddings
     # converts timesteps to be of dim [B//2, 1]
