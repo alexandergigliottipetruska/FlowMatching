@@ -115,7 +115,7 @@ for epoch in range(config.epochs):
         total_loss = 0
         total_examples = 0 
         
-        for data in test_dataloader():
+        for data in test_dataloader:
             x1, _ = data
             x1 = x1.to(device)
 
