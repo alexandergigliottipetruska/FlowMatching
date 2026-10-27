@@ -16,8 +16,9 @@ parser.add_argument("--learning-rate", default=0.0001, type=float, help="learnin
 parser.add_argument("--epochs", default=10, type=int, help="total number of training epochs")
 parser.add_argument("--seed", default=1, type=int, help="seed for training reproducibility")
 parser.add_argument("--device", default="cuda", type=str, help="CPU or GPU device")
-parser.add_argument("--data_dir", default="data", type=str, help="directory with training dataset")
-parser.add_argument("--output_dir", default="outputs/checkpoints", type=str, help="directory to store outputs and checkpoints")
+parser.add_argument("--data-dir", default="data", type=str, help="directory with training dataset")
+parser.add_argument("--output-dir", default="outputs/checkpoints", type=str, help="directory to store outputs and checkpoints")
+parser.add_argument("--download-data", default="True", type=bool, help="whether to download the training dataset or not (in the case of an existing one)")
 
 # Access arguments passed via CLI
 args = parser.parse_args()
