@@ -10,7 +10,6 @@ def sinusoidal_embeddings(t, dim, max_period=10000):
     # Frequencies
     frequencies = torch.exp(-log(max_period) * torch.arange(start=0, end=(dim // 2)) / (dim // 2)).to(t.device)
 
-
     # Calculate sinusoidal embeddings
     # converts timesteps to be of dim [B//2, 1]
     cos_embed = torch.cos(frequencies[None] * t[:, None]) 
