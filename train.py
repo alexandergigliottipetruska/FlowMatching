@@ -1,10 +1,10 @@
 import argparse
 import matplotlib.pyplot as plt
 import torch
-from FlowMatching.data import dataset_builder, dataloader_builder
-from FlowMatching.models.unet import UNet
-from FlowMatching.flow_matching import sample_path
-from FlowMatching.config import TrainingConfig
+from data import dataset_builder, dataloader_builder
+from models.unet import UNet
+from flow_matching import sample_path
+from config import TrainingConfig
 from torch import nn, optim
 
 # Create parse object
@@ -18,7 +18,6 @@ parser.add_argument("--seed", default=1, type=int, help="seed for training repro
 parser.add_argument("--device", default="cuda", type=str, help="CPU or GPU device")
 parser.add_argument("--data-dir", default="data", type=str, help="directory with training dataset")
 parser.add_argument("--output-dir", default="outputs/checkpoints", type=str, help="directory to store outputs and checkpoints")
-parser.add_argument("--download-data", default="True", type=bool, help="whether to download the training dataset or not (in the case of an existing one)")
 
 # Access arguments passed via CLI
 args = parser.parse_args()

@@ -11,3 +11,11 @@ class TrainingConfig:
     device: str
     data_dir: str
     output_dir: str
+
+@dataclass
+class InferenceConfig:
+    batch_size: int
+    num_steps: int
+    device: str
+    data_dir: str
+    checkpoint_dir: str

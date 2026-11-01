@@ -35,4 +35,3 @@ def test_t_half():
 
     returned_t, xt, ut = sample_path(x0, x1, t)
     assert torch.equal(xt, (x0 + x1) / 2)
-
