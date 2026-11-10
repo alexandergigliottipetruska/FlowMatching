@@ -12,7 +12,7 @@ parser = argparse.ArgumentParser()
 
 # Add optional arguments
 parser.add_argument("--batch-size", default=64, type=int, help="batch size for training")
-parser.add_argument("--learning-rate", default=0.0001, type=float, help="learning rate for gradient updates")
+parser.add_argument("--learning-rate", default=1e-4, type=float, help="learning rate for gradient updates")
 parser.add_argument("--epochs", default=10, type=int, help="total number of training epochs")
 parser.add_argument("--seed", default=1, type=int, help="seed for training reproducibility")
 parser.add_argument("--device", default="cuda", type=str, help="CPU or GPU device")
@@ -70,6 +70,30 @@ optimizer = optim.Adam(model.parameters(), lr=config.learning_rate)
 # Define loss function
 criterion = nn.MSELoss()
 
+# For EMA (Exponential Weighted Average)
+ema_model = torch.optim.swa_utils.AveragedModel(model,
+            multi_avg_fn=torch.optim.swa_utils.get_ema_multi_avg_fn(0.999), use_buffers=False)
+
+ema_model.update_parameters(model)
+# T_max is calls to scheduler step, in this equivalent to optim steps
+cosine_annealing = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=195000, eta_min=1e-6)
+warmup = torch.optim.lr_scheduler.LinearLR(optimizer, start_factor=0.01, end_factor=1.0, total_iters=5000)
+scheduler = torch.optim.lr_scheduler.SequentialLR(optimizer, [warmup, cosine_annealing], milestones=[5000])
+
+optim_steps = 0
+warmup_period = 5000
+
+# Checkpointing
+def save_checkpoint(model, ema_model, scheduler, optimizer, global_steps):
+    torch.save({
+        "model": model.state_dict(),
+        "ema": ema_model.state_dict(),
+        "scheduler": scheduler.state_dict(),
+        "optimizer": optimizer.state_dict(),
+        "steps": global_steps,
+    
+    }, f"{config.output_dir}/research_unet_checkpoint.pt")
+
 # Training loop and checkpointing
 for epoch in range(config.epochs):
     total_loss = 0
@@ -100,6 +124,18 @@ for epoch in range(config.epochs):
 
         # Update model parameters
         optimizer.step()
+        optim_steps += 1
+
+        # Update ema params
+        ema_model.update_parameters(model)
+        scheduler.step()
+
+        if optim_steps == 1000:
+            assert ema_model.n_averaged.item() == 1001
+
+        # Checkpoint every 10000 optim steps
+        if optim_steps % 10000 == 0:
+            save_checkpoint(model, ema_model, scheduler, optimizer, optim_steps)
 
         # Calculate loss
         total_loss += x1.shape[0] * loss.item()
@@ -137,4 +173,3 @@ for epoch in range(config.epochs):
 
     print(f"Epochs {epoch + 1}/{config.epochs} | Train: {avg_loss:.2f} | Eval: {eval_loss:.2f}")
 
-torch.save(model.state_dict(), f"{config.output_dir}/unet_checkpoint.pt")

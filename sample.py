@@ -50,16 +50,8 @@ def euler_sampler(model, batch_size, num_steps, device):
     # Clamp values between 0 and 1
     image_tensor = torch.clamp(image_tensor, 0, 1)
 
-    # Convert to torchvision grid
-    image_grid = make_grid(image_tensor, nrow=4)
-
-    # Save image
-    save_image(image_grid, "outputs/samples/cifar10_inference.png")
-
     # Save noise
     noise_tensor = torch.clamp(inverse_transform(x0), 0, 1)
-    noise_grid = make_grid(noise_tensor, nrow=4)
-    save_image(noise_grid, "outputs/samples/noise_inference.png")
     
     return noise_tensor, image_tensor
 
@@ -69,7 +61,7 @@ if __name__ == "__main__":
 
     # Add optional arguments
     parser.add_argument("--batch-size", default=64, type=int, help="batch size for training")
-    parser.add_argument("--num-steps", default=10, type=int, help="number of steps N for Euler Integration")
+    parser.add_argument("--num-steps", default=100, type=int, help="number of steps N for Euler Integration")
     parser.add_argument("--device", default="mps", type=str, help="CPU or GPU device")
     parser.add_argument("--data-dir", default="data", type=str, help="directory with CIFAR10 dataset")
     parser.add_argument("--checkpoint-dir", default="outputs/checkpoints", type=str, help="directory that stores checkpoints")
@@ -94,8 +86,17 @@ if __name__ == "__main__":
 
     # Instanstiate model
     model = UNet()
-    model.load_state_dict(torch.load(f"{config.checkpoint_dir}/unet_checkpoint.pt", weights_only=True, map_location="cpu"))
+    model.load_state_dict(torch.load(f"{config.checkpoint_dir}/unet_checkpoint100.pt", weights_only=True, map_location="cpu"))
     model.to(device)
     model.eval()
 
     noise, image = euler_sampler(model, config.batch_size, config.num_steps, config.device)
+
+    noise_grid = make_grid(noise, nrow=4)
+    save_image(noise_grid, "outputs/samples/noise_inference.png")
+
+    # Convert to torchvision grid
+    image_grid = make_grid(image, nrow=4)
+
+    # Save image
+    save_image(image_grid, "outputs/samples/imagegeneration.png")

@@ -11,7 +11,7 @@ config = TrainingConfig(
     learning_rate=0.01,
     epochs=5,
     seed=1,
-    device="cpu",
+    device="mps",
     data_dir="data",
     output_dir="outputs"
 )
@@ -36,6 +36,8 @@ test_dataloader = dataloader_builder(
     batch_size=config.batch_size
 )
 
+
+device = "mps"
 model = UNet()
 
 # Define optimizer

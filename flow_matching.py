@@ -27,7 +27,3 @@ def sample_path(x0, x1, t=None):
     ut = x1 - x0
 
     return t.view(-1), xt, ut
-
-
-
-
